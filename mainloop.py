@@ -46,7 +46,12 @@ class loop:
                         self.char2stand = False
                         self.char2state = 'right'
                     if event.key == pygame.K_DOWN:
+                        self.shot2 = True
+                        self.x = self.char2.char.x
+                        self.y = self.char2.char.y
+                        self.char2.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char2state))
                         self.char2.shoot(self.screen, self.char2state)
+                        self.char2.shootdetach(self.char2.char.x, self.char2.char.y, self.shot2)
 
                     if event.key == pygame.K_w and self.alljumpsforchar1 < 2:
                         self.gravityforchar1 = -20
@@ -63,7 +68,7 @@ class loop:
                         self.shot1 = True
                         self.x = self.char1.char.x
                         self.y = self.char1.char.y
-                        self.char1.bullets.append((pygame.rect.Rect(self.x, self.y, 50, 50), self.char1state))
+                        self.char1.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char1state))
                         self.char1.shoot(self.screen, self.char1state)
                         self.char1.shootdetach(self.char1.char.x, self.char1.char.y, self.shot1)
 
@@ -89,8 +94,13 @@ class loop:
             self.char2.char.y += self.gravityforchar2
 
             self.char1.shoot(self.screen, self.char1state)
+            self.char2.shoot(self.screen, self.char2state)
 
             for img, block in self.map.allblocks:
+                for bullet,d in self.char1.bullets:
+                    if bullet.colliderect(block):
+                        self.char1.bullets.pop(self.char1.tmplist.index(bullet))
+                        self.char1.tmplist.remove(bullet)
                 for i in range(block.left, block.right):
                     if self.char1.char.collidepoint(i, block.top):
                         self.char1.char.bottom = block.top
@@ -99,11 +109,23 @@ class loop:
                     if self.char1.char.collidepoint(i, block.bottom):
                         self.gravityforchar1 = 0
                         self.char1.char.top = block.bottom
+                    if self.char2.char.collidepoint(i, block.top):
+                        self.char2.char.bottom = block.top
+                        self.gravityforchar2 = 0
+                        self.alljumpsforchar2 = 0
+                    if self.char2.char.collidepoint(i, block.bottom):
+                        self.gravityforchar2 = 0
+                        self.char2.char.top = block.bottom
                 for i in range(block.top, block.bottom):
                     if self.char1.char.collidepoint(block.left, i):
                         self.char1.char.right = block.left
                     if self.char1.char.collidepoint(block.right, i):
                         self.char1.char.left = block.right
+                    if self.char2.char.collidepoint(block.left, i):
+                        self.char2.char.right = block.left
+                    if self.char2.char.collidepoint(block.right, i):
+                        self.char2.char.left = block.right
+                        
             pygame.display.update()
             self.clock.tick(60)
 
