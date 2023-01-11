@@ -101,6 +101,10 @@ class loop:
                     if bullet.colliderect(block):
                         self.char1.bullets.pop(self.char1.tmplist.index(bullet))
                         self.char1.tmplist.remove(bullet)
+                for bullet,d in self.char2.bullets:
+                    if bullet.colliderect(block):
+                        self.char2.bullets.pop(self.char1.tmplist.index(bullet))
+                        self.char2.tmplist.remove(bullet)
                 for i in range(block.left, block.right):
                     if self.char1.char.collidepoint(i, block.top):
                         self.char1.char.bottom = block.top
