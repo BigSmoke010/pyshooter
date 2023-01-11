@@ -13,18 +13,19 @@ class character:
         self.bullets = []
         self.tmplist = []
 
-    def showchar(self, screen, direction, playernum):
+    def showchar(self, screen, direction, playernum, isstanding):
         if playernum == 1:
-            if direction == 'right' or direction == 'left':
-                for i in self.char1imgs:
-                    self.indx += 0.01
-                    if self.indx >= len(self.char1imgs):
-                        self.indx = 0
-                    self.chosenimg = self.char1imgs[int(self.indx)]
-                    if direction == 'left':
-                        self.chosenimg = pygame.transform.flip(self.chosenimg, True, False)
-                    screen.blit(self.chosenimg, self.char)
-            else:
+            if not isstanding:
+                if direction == 'right' or direction == 'left':
+                    for i in self.char1imgs:
+                        self.indx += 0.01
+                        if self.indx >= len(self.char1imgs):
+                            self.indx = 0
+                        self.chosenimg = self.char1imgs[int(self.indx)]
+                        if direction == 'left':
+                            self.chosenimg = pygame.transform.flip(self.chosenimg, True, False)
+                        screen.blit(self.chosenimg, self.char)
+            if isstanding:
                 for i in self.char1idleimgs:
                     self.indx += 0.01
                     if self.indx >= len(self.char1idleimgs):
@@ -37,9 +38,9 @@ class character:
             if rect not in self.tmplist:
                 self.tmplist.append(rect)
             if dir == 'left':
-                rect.x -= 20
+                rect.x -= 10
             if dir == 'right':
-                rect.x += 20
+                rect.x += 10
             pygame.draw.rect(screen, 'red', rect)
             if rect.x <= 0 or rect.x >= screen.get_width():
                 for i in self.tmplist:
@@ -47,13 +48,11 @@ class character:
                         try:
                             self.bullets.pop(self.tmplist.index(rect))
                             self.tmplist.remove(rect)
-                            print(self.tmplist)
                         except IndexError:
                             pass
     def shootdetach(self, x, y, shoted):
         if shoted:
             try:
-                print(self.bullets)
                 self.bullets[-1][0].y = y
             except IndexError:
                 pass
