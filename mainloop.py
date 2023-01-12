@@ -23,18 +23,21 @@ class loop:
         self.char2stand = True
         self.shot1 = False
         self.shot2 = False
+        self.plyr1health = 100
+        self.plyr2health = 100
+        self.healthbar1 = pygame.rect.Rect(10, 50, self.plyr1health * 2, 15)
+        self.healthbar2 = pygame.rect.Rect(550, 50, self.plyr2health * 2, 15)
         self.running = True
 
     def startloop(self):
         while self.running:
             self.screen.fill((0,0,0))
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP and self.alljumpsforchar2 <= 2:
+                    if event.key == pygame.K_UP and self.alljumpsforchar2 < 2:
                         self.gravityforchar2 = -20
                         self.alljumpsforchar2 += 1
                     if event.key == pygame.K_LEFT:
@@ -73,16 +76,34 @@ class loop:
                         self.char1.shootdetach(self.char1.char.x, self.char1.char.y, self.shot1)
 
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_d or event.key == pygame.K_a:
-                        self.char1stand = True
-                        self.xforchar1 = 0
-                    if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
-                        self.char2stand = True
-                        self.xforchar2 = 0
+                    if event.key == pygame.K_d:
+                        if self.xforchar1 == 10:
+                            self.char1stand = True
+                            self.xforchar1 = 0
+                    if event.key == pygame.K_a:
+                        if self.xforchar1 == -10:
+                            self.char1stand = True
+                            self.xforchar1 = 0
+
+                    if event.key == pygame.K_RIGHT : 
+                        if self.xforchar2 == 10:
+                            self.char2stand = True
+                            self.xforchar2 = 0
+                    if event.key == pygame.K_LEFT: 
+                        if self.xforchar2 == -10:
+                            self.char2stand = True
+                            self.xforchar2 = 0
+
 
             self.map.showmap(self.screen)
-            self.char1.showchar(self.screen, self.char1state, 1, self.char1stand)    
-            self.char2.showchar(self.screen, self.char2state, 2, self.char2stand)    
+
+            pygame.draw.rect(self.screen, 'red', self.healthbar1)
+            pygame.draw.rect(self.screen, 'red', self.healthbar2)
+            self.healthbar1.width = self.plyr1health * 2
+            self.healthbar2.width = self.plyr2health * 2
+
+            self.char1.showchar(self.screen, self.char1state, self.char1stand)    
+            self.char2.showchar(self.screen, self.char2state, self.char2stand)    
 
             self.char1.char.x += self.xforchar1
             self.char2.char.x += self.xforchar2
@@ -101,10 +122,20 @@ class loop:
                     if bullet.colliderect(block):
                         self.char1.bullets.pop(self.char1.tmplist.index(bullet))
                         self.char1.tmplist.remove(bullet)
+                    if bullet.colliderect(self.char2.char):
+                        self.char1.bullets.pop(self.char1.tmplist.index(bullet))
+                        self.char1.tmplist.remove(bullet)
+                        self.plyr2health -= 10
                 for bullet,d in self.char2.bullets:
                     if bullet.colliderect(block):
-                        self.char2.bullets.pop(self.char1.tmplist.index(bullet))
+                        self.char2.bullets.pop(self.char2.tmplist.index(bullet))
                         self.char2.tmplist.remove(bullet)
+                    if bullet.colliderect(self.char1.char):
+                        self.char2.bullets.pop(self.char2.tmplist.index(bullet))
+                        self.char2.tmplist.remove(bullet)
+                        self.plyr1health -= 10
+                        print(self.plyr1health)
+                        print('ouuchh')
                 for i in range(block.left, block.right):
                     if self.char1.char.collidepoint(i, block.top):
                         self.char1.char.bottom = block.top

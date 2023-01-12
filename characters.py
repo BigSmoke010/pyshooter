@@ -1,6 +1,5 @@
 import pygame
 
-
 class character:
     def __init__(self, playernum, playerpic=None) -> None:
         self.char1imgs = [pygame.image.load('./images/Player/r_run_1.png').convert_alpha(),pygame.image.load('./images/Player/r_run_2.png').convert_alpha(),pygame.image.load('./images/Player/r_run_3.png').convert_alpha(),pygame.image.load('./images/Player/r_run_4.png').convert_alpha(),pygame.image.load('./images/Player/r_run_5.png').convert_alpha(),pygame.image.load('./images/Player/r_run_6.png').convert_alpha(),pygame.image.load('./images/Player/r_run_7.png').convert_alpha(),pygame.image.load('./images/Player/r_run_8.png').convert_alpha(),pygame.image.load('./images/Player/r_run_9.png').convert_alpha(),pygame.image.load('./images/Player/r_run_10.png').convert_alpha(),pygame.image.load('./images/Player/r_run_11.png').convert_alpha(),pygame.image.load('./images/Player/r_run_12.png').convert_alpha(),pygame.image.load('./images/Player/r_run_13.png').convert_alpha(),pygame.image.load('./images/Player/r_run_14.png').convert_alpha(),pygame.image.load('./images/Player/r_run_15.png').convert_alpha(),pygame.image.load('./images/Player/r_run_16.png').convert_alpha(),]
@@ -17,7 +16,7 @@ class character:
         self.bullets = []
         self.tmplist = []
 
-    def showchar(self, screen, direction, playernum, isstanding):
+    def showchar(self, screen, direction, isstanding):
         if not isstanding:
             if direction == 'right' or direction == 'left':
                 for i in self.char1imgs:
@@ -34,9 +33,11 @@ class character:
                 if self.indx >= len(self.char1idleimgs):
                     self.indx = 0
                 self.chosenimg = self.char1idleimgs[int(self.indx)]
+                if direction == 'left':
+                    self.chosenimg = pygame.transform.flip(self.chosenimg, True, False)
                 screen.blit(self.chosenimg, self.char)
 
-    def shoot(self, screen : pygame.Surface, chardir):
+    def shoot(self, screen , chardir):
         for rect, dir in self.bullets:
             if rect not in self.tmplist:
                 self.tmplist.append(rect)

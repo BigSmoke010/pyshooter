@@ -19,29 +19,22 @@ class pyMap:
         self.imgrct = self.image.get_rect(topleft=(550, 200))
         screen.blit(self.image, self.imgrct)
         self.allblocks.append((self.image, self.imgrct))
-
-        for i in range(16):
+        for i in range(0, 800, 50):
             img = pygame.image.load('./images/Block_Tiles/A10.png').convert_alpha()
-            imgrect = img.get_rect(topleft=[self.num, 550])
+            imgrect = img.get_rect(topleft=[i, 550])
             screen.blit(img, imgrect)
             self.allblocks.append((img, imgrect))
-            self.num += 50
 
-        self.num = 0
-        for i in range(4):
+        for i in range(0, 200, 50):
             img = pygame.image.load('./images/Block_Tiles/A2.png').convert_alpha()
-            imgrect = img.get_rect(topleft=[self.num, 200])
+            imgrect = img.get_rect(topleft=[i, 200])
             screen.blit(img, imgrect)
             self.allblocks.append((img, imgrect))
-            self.num += 50
-
-        self.num = 600
-        for i in range(4):
+        for i in range(600, 800, 50):
             img = pygame.image.load('./images/Block_Tiles/A2.png').convert_alpha()
-            imgrect = img.get_rect(topleft=[self.num, 200])
+            imgrect = img.get_rect(topleft=[i,  200])
             screen.blit(img, imgrect)
             self.allblocks.append((img, imgrect))
-            self.num += 50
 
         
 
