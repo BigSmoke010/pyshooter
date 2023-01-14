@@ -1,4 +1,5 @@
 import pygame
+import time
 import characters
 import map
 
@@ -133,12 +134,11 @@ class loop:
                         self.char2.bullets.pop(self.char2.tmplist.index(bullet))
                         self.char2.tmplist.remove(bullet)
                     if bullet.colliderect(self.char1.rect):
+                        self.char2.bulletimg = pygame.image.load('./images/skeleton/bone/bone.png')
                         self.screen.blit(pygame.image.load('./images/Player/r_run_2_damaged.png').convert_alpha(), self.char1.rect)
                         self.char2.bullets.pop(self.char2.tmplist.index(bullet))
                         self.char2.tmplist.remove(bullet)
                         self.plyr1health -= 10
-                        print(self.plyr1health)
-                        print('ouuchh')
                 for i in range(block.left, block.right):
                     if self.char1.rect.collidepoint(i, block.top):
                         self.char1.rect.bottom = block.top
