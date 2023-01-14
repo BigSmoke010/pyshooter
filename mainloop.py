@@ -166,22 +166,22 @@ class loop:
                 for i in range(0, 200):
                     if self.char2.rect.collidepoint(800, i):
                         self.char2.rect.x = 10
-                for i in range(0, 200):
+                    if self.char1.rect.collidepoint(800, i):
+                        self.char1.rect.x = 10
                     if self.char2.rect.collidepoint(0, i):
-                        self.char2.rect.x = 740
+                        self.char2.rect.x = 750
+                    if self.char1.rect.collidepoint(0, i):
+                        self.char1.rect.x = 750
                 for i in range(250, 550):
                     if self.char2.rect.collidepoint(800, i):
                         self.char2.rect.x = 10
-                for i in range(250, 550):
+                    if self.char1.rect.collidepoint(800, i):
+                        self.char1.rect.x = 10
                     if self.char2.rect.collidepoint(0, i):
-                        self.char2.rect.x = 740
+                        self.char2.rect.x = 750
+                    if self.char1.rect.collidepoint(0, i):
+                        self.char1.rect.x = 750
 
-                        
             self.charsgroup.update(self.screen, self.char1state, self.char2state, self.char1stand, self.char2stand)
             pygame.display.flip()
             self.clock.tick(60)
-
-
-
-
-

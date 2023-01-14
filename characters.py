@@ -109,4 +109,3 @@ class character(pygame.sprite.Sprite):
             except IndexError:
                 pass
 
-        
