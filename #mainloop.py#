@@ -144,7 +144,7 @@ class loop:
                             self.char1.bullets.pop(self.char1.tmplist.index(bullet))
                             self.char1.tmplist.remove(bullet)
                         if bullet.colliderect(self.char2.rect):
-                            self.screen.blit(pygame.image.load('./images/skeleton/idle_hit.png').convert_alpha(), self.char2.rect)
+                            self.screen.blit(pygame.image.load('./images/Player/r_run_2_damaged.png').convert_alpha(), self.char2.rect)
                             self.char1.bullets.pop(self.char1.tmplist.index(bullet))
                             self.char1.tmplist.remove(bullet)
                             self.plyr2health -= 10
@@ -153,7 +153,8 @@ class loop:
                             self.char2.bullets.pop(self.char2.tmplist.index(bullet))
                             self.char2.tmplist.remove(bullet)
                         if bullet.colliderect(self.char1.rect):
-                            self.screen.blit(pygame.image.load('./images/Player/r_hit_1_hi.png').convert_alpha(), self.char1.rect)
+                            self.char2.bulletimg = pygame.image.load('./images/skeleton/bone/bone.png')
+                            self.screen.blit(pygame.image.load('./images/Player/r_run_2_damaged.png').convert_alpha(), self.char1.rect)
                             self.char2.bullets.pop(self.char2.tmplist.index(bullet))
                             self.char2.tmplist.remove(bullet)
                             self.plyr1health -= 10

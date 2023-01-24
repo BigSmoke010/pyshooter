@@ -46,22 +46,21 @@ class character(pygame.sprite.Sprite):
             isstanding = isstanding2
 
         if not isstanding:
-            if direction == 'right' or direction == 'left':
-                for i in self.char1imgs:
-                    self.indx += 0.01
+            for i in self.char1imgs:
+                self.indx += 0.01
+                if self.playernum == 1:
+                    if self.indx >= len(self.char1imgs):
+                        self.indx = 0
                     if self.playernum == 1:
-                        if self.indx >= len(self.char1imgs):
-                            self.indx = 0
-                        if self.playernum == 1:
-                            self.image= self.char1imgs[int(self.indx)]
-                    else:
-                        if self.indx >=len(self.char2imgs):
-                            self.indx = 0
-                        if self.playernum == 2:
-                            self.image= self.char2imgs[int(self.indx)]
+                        self.image= self.char1imgs[int(self.indx)]
+                else:
+                    if self.indx >=len(self.char2imgs):
+                        self.indx = 0
+                    if self.playernum == 2:
+                        self.image= self.char2imgs[int(self.indx)]
 
-                    if direction == 'left' :
-                        self.image = pygame.transform.flip(self.image, True, False)
+                if direction == 'left':
+                    self.image = pygame.transform.flip(self.image, True, False)
         if isstanding:
             if self.playernum == 1:
                 for i in self.char1idleimgs:
@@ -70,6 +69,8 @@ class character(pygame.sprite.Sprite):
                         if self.indx >= len(self.char1idleimgs):
                             self.indx = 0
                         self.image= self.char1idleimgs[int(self.indx)]
+                if direction == 'left':
+                    self.image= pygame.transform.flip(self.image, True, False)
             else:
                 for i in self.char2idleimgs:
                     self.indx += 0.01
@@ -113,8 +114,6 @@ class character(pygame.sprite.Sprite):
 
     def death(self, num, screen, game):
         if game == 2:
-            self.bullets.clear()
-            self.tmplist.clear()
             if num == 2:
                 for i in self.char2death:
                     self.indx += 0.01
@@ -129,7 +128,3 @@ class character(pygame.sprite.Sprite):
                         break
                     self.image = self.char1deathimgs[int(self.indx)]
                     screen.blit(self.image, self.rect)
-
-            
-
-
