@@ -27,8 +27,11 @@ class loop:
         self.shot2 = False
         self.plyr1health = 100
         self.plyr2health = 100
+        self.healthimg =  pygame.image.load('./images/healthbar.png').convert_alpha()
+        self.healthimg = pygame.transform.scale(self.healthimg,(212, 25))
+        self.healthimg2 = pygame.transform.flip(self.healthimg, True, False)
         self.healthbar1 = pygame.rect.Rect(10, 50, self.plyr1health * 2, 15)
-        self.healthbar2 = pygame.rect.Rect(550, 50, self.plyr2health * 2, 15)
+        self.healthbar2 = pygame.rect.Rect(590, 50, self.plyr2health * 2, 15)
         self.charsgroup = pygame.sprite.Group()
         self.charsgroup.add(self.char1)
         self.charsgroup.add(self.char2)
@@ -122,6 +125,8 @@ class loop:
 
                 pygame.draw.rect(self.screen, 'red', self.healthbar1)
                 pygame.draw.rect(self.screen, 'red', self.healthbar2)
+                self.screen.blit(self.healthimg, (0,45))
+                self.screen.blit(self.healthimg2, (590,45))
                 self.healthbar1.width = self.plyr1health * 2
                 self.healthbar2.width = self.plyr2health * 2
 
