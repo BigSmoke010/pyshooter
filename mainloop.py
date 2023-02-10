@@ -2,6 +2,7 @@ import pygame
 import characters
 import map
 import chest
+import weapons
 from random import randint
 
 class loop:
@@ -14,6 +15,8 @@ class loop:
         self.last = pygame.time.get_ticks()
         self.char1 = characters.character(1)
         self.char2 = characters.character(2)
+        self.char1wp = weapons.char1weapon(10, False)
+        self.char2wp = weapons.char2weapon(10, False)
         self.chest = chest.chest()
         self.xforchar1 = 0
         self.xforchar2 = 0
@@ -75,9 +78,9 @@ class loop:
                             self.shot2 = True
                             self.x = self.char2.rect.x
                             self.y = self.char2.rect.y + 10
-                            self.char2.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char2state))
-                            self.char2.shoot(self.screen, self.char2state)
-                            self.char2.shootdetach(self.char2.rect.x, self.char2.rect.y, self.shot2)
+                            self.char2wp.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char2state))
+                            self.char2wp.shoot(self.screen, self.char2state)
+                            self.char2wp.shootdetach(self.char2.rect.x, self.char2.rect.y, self.shot2)
 
                         if event.key == pygame.K_w and self.alljumpsforchar1 < 2:
                             self.gravityforchar1 = -20
@@ -94,9 +97,9 @@ class loop:
                             self.shot1 = True
                             self.x = self.char1.rect.x
                             self.y = self.char1.rect.y + 10
-                            self.char1.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char1state))
-                            self.char1.shoot(self.screen, self.char1state)
-                            self.char1.shootdetach(self.char1.rect.x, self.char1.rect.y, self.shot1)
+                            self.char1wp.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char1state))
+                            self.char1wp.shoot(self.screen, self.char1state)
+                            self.char1wp.shootdetach(self.char1.rect.x, self.char1.rect.y, self.shot1)
 
                     if self.game == 2:
                         if event.key == pygame.K_r:
@@ -110,8 +113,8 @@ class loop:
                             self.char2.indx = 0
                             self.char1.tmplist.clear()
                             self.char2.tmplist.clear()
-                            self.char1.bullets.clear()
-                            self.char2.bullets.clear()
+                            self.char1wp.bullets.clear()
+                            self.char2wp.bullets.clear()
                             self.game = 1
 
                 if event.type == pygame.KEYUP:
@@ -166,27 +169,27 @@ class loop:
                         self.chest.chestclose()
                         self.gottime = False
 
-                self.char1.shoot(self.screen, self.char1state)
-                self.char2.shoot(self.screen, self.char2state)
+                self.char1wp.shoot(self.screen, self.char1state)
+                self.char2wp.shoot(self.screen, self.char2state)
 
                 for img, block in self.map.allblocks:
-                    for bullet,d in self.char1.bullets:
+                    for bullet,d in self.char1wp.bullets:
                         if bullet.colliderect(block):
-                            self.char1.bullets.pop(self.char1.tmplist.index(bullet))
-                            self.char1.tmplist.remove(bullet)
+                            self.char1wp.bullets.pop(self.char1wp.tmplist.index(bullet))
+                            self.char1wp.tmplist.remove(bullet)
                         if bullet.colliderect(self.char2.rect):
                             self.screen.blit(pygame.image.load('./images/skeleton/idle_hit.png').convert_alpha(), self.char2.rect)
-                            self.char1.bullets.pop(self.char1.tmplist.index(bullet))
-                            self.char1.tmplist.remove(bullet)
+                            self.char1wp.bullets.pop(self.char1wp.tmplist.index(bullet))
+                            self.char1wp.tmplist.remove(bullet)
                             self.plyr2health -= 10
-                    for bullet,d in self.char2.bullets:
+                    for bullet,d in self.char2wp.bullets:
                         if bullet.colliderect(block):
-                            self.char2.bullets.pop(self.char2.tmplist.index(bullet))
-                            self.char2.tmplist.remove(bullet)
+                            self.char2wp.bullets.pop(self.char2wp.tmplist.index(bullet))
+                            self.char2wp.tmplist.remove(bullet)
                         if bullet.colliderect(self.char1.rect):
                             self.screen.blit(pygame.image.load('./images/Player/r_hit_1_hi.png').convert_alpha(), self.char1.rect)
-                            self.char2.bullets.pop(self.char2.tmplist.index(bullet))
-                            self.char2.tmplist.remove(bullet)
+                            self.char2wp.bullets.pop(self.char2wp.tmplist.index(bullet))
+                            self.char2wp.tmplist.remove(bullet)
                             self.plyr1health -= 10
                     for i in range(block.left, block.right):
                         if self.char1.rect.collidepoint(i, block.top):
