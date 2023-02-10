@@ -30,6 +30,7 @@ class loop:
         self.shot1 = False
         self.shot2 = False
         self.showchest = False
+        self.chestopen = False
         self.plyr1health = 100
         self.plyr2health = 100
         self.healthimg =  pygame.image.load('./images/healthbar.png').convert_alpha()
@@ -38,7 +39,7 @@ class loop:
         self.healthbar1 = pygame.rect.Rect(10, 50, self.plyr1health * 2, 15)
         self.healthbar2 = pygame.rect.Rect(590, 50, self.plyr2health * 2, 15)
         self.usrevnt = pygame.USEREVENT + 1
-        self.timer = pygame.time.set_timer(self.usrevnt, 3_000)
+        self.timer = pygame.time.set_timer(self.usrevnt, 10_000)
         self.gottime = False
         self.charsgroup = pygame.sprite.Group()
         self.chestsgroup = pygame.sprite.Group()
@@ -55,8 +56,8 @@ class loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-                if event.type == self.usrevnt and not self.showchest:
-                    self.showchest = True
+                if event.type == self.usrevnt and not self.showchest and randint(0,1):
+                        self.showchest = True
                 if event.type == pygame.KEYDOWN:
                     if self.game == 1:
                         if event.key == pygame.K_UP and self.alljumpsforchar2 < 2:
@@ -154,12 +155,14 @@ class loop:
                     self.chestsgroup.draw(self.screen)
                 if self.char1.rect.colliderect(self.chest) and self.showchest:
                     self.chest.chestopen()
-                if self.showchest:
+                    self.chestopen = True
+                if self.showchest and self.chestopen:
                     now = pygame.time.get_ticks()
                     if not self.gottime:
                         self.getlasttime(now)
                     if now - self.last >= 3000:
                         self.showchest = False
+                        self.chestopen = False
                         self.chest.chestclose()
                         self.gottime = False
 
@@ -239,6 +242,7 @@ class loop:
 
             pygame.display.flip()
             self.clock.tick(60)
+
     def getlasttime(self, x):
         self.last = x
         self.gottime = True
