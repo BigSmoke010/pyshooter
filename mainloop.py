@@ -34,6 +34,10 @@ class loop:
         self.shot2 = False
         self.showchest = False
         self.chestopen = False
+        self.char1slash = False
+        self.char2slash = False
+        self.char2hit = False
+        self.char1hit = False
         self.plyr1health = 100
         self.plyr2health = 100
         self.healthimg =  pygame.image.load('./images/healthbar.png').convert_alpha()
@@ -42,7 +46,7 @@ class loop:
         self.healthbar1 = pygame.rect.Rect(10, 50, self.plyr1health * 2, 15)
         self.healthbar2 = pygame.rect.Rect(590, 50, self.plyr2health * 2, 15)
         self.usrevnt = pygame.USEREVENT + 1
-        self.timer = pygame.time.set_timer(self.usrevnt, 10_000)
+        self.timer = pygame.time.set_timer(self.usrevnt, 3_000)
         self.gottime = False
         self.charsgroup = pygame.sprite.Group()
         self.chestsgroup = pygame.sprite.Group()
@@ -59,7 +63,7 @@ class loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-                if event.type == self.usrevnt and not self.showchest and randint(0,1):
+                if event.type == self.usrevnt and not self.showchest :
                         self.showchest = True
                 if event.type == pygame.KEYDOWN:
                     if self.game == 1:
@@ -78,9 +82,12 @@ class loop:
                             self.shot2 = True
                             self.x = self.char2.rect.x
                             self.y = self.char2.rect.y + 10
-                            self.char2wp.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char2state))
-                            self.char2wp.shoot(self.screen, self.char2state)
-                            self.char2wp.shootdetach(self.char2.rect.x, self.char2.rect.y, self.shot2)
+                            if self.char2wp.type != 'mele':
+                                self.char2wp.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char2state))
+                                self.char2wp.shootdetach(self.char2.rect.x, self.char2.rect.y, self.shot2)
+                            self.char2wp.shoot(self.screen, self.char2state, self.char2.rect.x, self.char2.rect.y)
+                            self.char2slash = True
+                            self.char1hit = False
 
                         if event.key == pygame.K_w and self.alljumpsforchar1 < 2:
                             self.gravityforchar1 = -20
@@ -97,12 +104,17 @@ class loop:
                             self.shot1 = True
                             self.x = self.char1.rect.x
                             self.y = self.char1.rect.y + 10
-                            self.char1wp.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char1state))
-                            self.char1wp.shoot(self.screen, self.char1state)
-                            self.char1wp.shootdetach(self.char1.rect.x, self.char1.rect.y, self.shot1)
+                            if self.char1wp.type != 'mele':
+                                self.char1wp.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char1state))
+                                self.char1wp.shootdetach(self.char1.rect.x, self.char1.rect.y, self.shot1)
+                            self.char1wp.shoot(self.screen, self.char1state, self.char1.rect.x, self.char1.rect.y)
+                            self.char1slash = True
+                            self.char2hit = False
 
                     if self.game == 2:
                         if event.key == pygame.K_r:
+                            self.char1wp = weapons.char1weapon(10, False)
+                            self.char2wp = weapons.char2weapon(10, False)
                             self.plyr1health = 100
                             self.plyr2health = 100
                             self.char1.rect.x = 100
@@ -152,12 +164,22 @@ class loop:
 
                 self.char1.rect.y += self.gravityforchar1
                 self.char2.rect.y += self.gravityforchar2
+                if self.char1slash:
+                    if not self.char1wp.shoot(self.screen, self.char1state, self.char1.rect.x, self.char1.rect.y):
+                        self.char1slash = False
+                if self.char2slash:
+                    if not self.char2wp.shoot(self.screen, self.char2state, self.char2.rect.x, self.char2.rect.y):
+                        self.char2slash = False
 
-                self.charsgroup.draw(self.screen)
                 if self.showchest:
                     self.chestsgroup.draw(self.screen)
                 if self.char1.rect.colliderect(self.chest) and self.showchest:
                     self.chest.chestopen()
+                    self.char1wp = weapons.sword(20, 5)
+                    self.chestopen = True
+                if self.char2.rect.colliderect(self.chest) and self.showchest:
+                    self.chest.chestopen()
+                    self.char2wp = weapons.sword(20, 5)
                     self.chestopen = True
                 if self.showchest and self.chestopen:
                     now = pygame.time.get_ticks()
@@ -169,9 +191,19 @@ class loop:
                         self.chest.chestclose()
                         self.gottime = False
 
-                self.char1wp.shoot(self.screen, self.char1state)
-                self.char2wp.shoot(self.screen, self.char2state)
-
+                if self.char1wp.type != 'mele':
+                    self.char1wp.shoot(self.screen, self.char1state)
+                else:
+                    if self.char2.rect.colliderect(self.char1wp.rect) and not self.char2hit:
+                        self.plyr2health -= 10
+                        self.char2hit = True
+                if self.char2wp.type != 'mele':
+                    self.char2wp.shoot(self.screen, self.char2state)
+                else:
+                    if self.char1.rect.colliderect(self.char2wp.rect) and not self.char1hit:
+                        self.plyr1health -= 10
+                        self.char1hit = True
+                self.charsgroup.draw(self.screen)               
                 for img, block in self.map.allblocks:
                     for bullet,d in self.char1wp.bullets:
                         if bullet.colliderect(block):
