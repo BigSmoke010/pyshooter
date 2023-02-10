@@ -32,5 +32,10 @@ class pyMap:
         self.image = pygame.image.load('./images/Block_Tiles/left.png').convert_alpha()
         self.imgrct = self.image.get_rect(topleft=(600, 200))
         self.allblocks.append((self.image, self.imgrct))
-
+        self.image = pygame.image.load('./images/Block_Tiles/height.png').convert_alpha()
+        self.imgrct = self.image.get_rect(topleft=(0, 350))
+        self.allblocks.append((self.image, self.imgrct))
+        self.image = pygame.image.load('./images/Block_Tiles/height.png').convert_alpha()
+        self.imgrct = self.image.get_rect(topleft=(600, 350))
+        self.allblocks.append((self.image, self.imgrct))
 

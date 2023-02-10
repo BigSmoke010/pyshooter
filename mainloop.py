@@ -1,6 +1,8 @@
 import pygame
 import characters
 import map
+import chest
+from random import randint
 
 class loop:
     def __init__(self) -> None:
@@ -9,8 +11,10 @@ class loop:
         self.screen = pygame.display.set_mode((800,600))
         self.map = map.pyMap()
         self.game = 1
+        self.last = pygame.time.get_ticks()
         self.char1 = characters.character(1)
         self.char2 = characters.character(2)
+        self.chest = chest.chest()
         self.xforchar1 = 0
         self.xforchar2 = 0
         self.gravityforchar1 = 0
@@ -25,6 +29,7 @@ class loop:
         self.char2stand = True
         self.shot1 = False
         self.shot2 = False
+        self.showchest = False
         self.plyr1health = 100
         self.plyr2health = 100
         self.healthimg =  pygame.image.load('./images/healthbar.png').convert_alpha()
@@ -32,7 +37,12 @@ class loop:
         self.healthimg2 = pygame.transform.flip(self.healthimg, True, False)
         self.healthbar1 = pygame.rect.Rect(10, 50, self.plyr1health * 2, 15)
         self.healthbar2 = pygame.rect.Rect(590, 50, self.plyr2health * 2, 15)
+        self.usrevnt = pygame.USEREVENT + 1
+        self.timer = pygame.time.set_timer(self.usrevnt, 3_000)
+        self.gottime = False
         self.charsgroup = pygame.sprite.Group()
+        self.chestsgroup = pygame.sprite.Group()
+        self.chestsgroup.add(self.chest)
         self.charsgroup.add(self.char1)
         self.charsgroup.add(self.char2)
         self.font = pygame.font.Font('./fonts/VCR_OSD_MONO_1.001.ttf', 30)
@@ -45,7 +55,8 @@ class loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-
+                if event.type == self.usrevnt and not self.showchest:
+                    self.showchest = True
                 if event.type == pygame.KEYDOWN:
                     if self.game == 1:
                         if event.key == pygame.K_UP and self.alljumpsforchar2 < 2:
@@ -122,7 +133,6 @@ class loop:
                             self.xforchar2 = 0
 
             if self.game == 1:
-
                 pygame.draw.rect(self.screen, 'red', self.healthbar1)
                 pygame.draw.rect(self.screen, 'red', self.healthbar2)
                 self.screen.blit(self.healthimg, (0,45))
@@ -140,6 +150,19 @@ class loop:
                 self.char2.rect.y += self.gravityforchar2
 
                 self.charsgroup.draw(self.screen)
+                if self.showchest:
+                    self.chestsgroup.draw(self.screen)
+                if self.char1.rect.colliderect(self.chest) and self.showchest:
+                    self.chest.chestopen()
+                if self.showchest:
+                    now = pygame.time.get_ticks()
+                    if not self.gottime:
+                        self.getlasttime(now)
+                    if now - self.last >= 3000:
+                        self.showchest = False
+                        self.chest.chestclose()
+                        self.gottime = False
+
                 self.char1.shoot(self.screen, self.char1state)
                 self.char2.shoot(self.screen, self.char2state)
 
@@ -186,16 +209,7 @@ class loop:
                             self.char2.rect.right = block.left
                         if self.char2.rect.collidepoint(block.right, i):
                             self.char2.rect.left = block.right
-                    for i in range(0, 200):
-                        if self.char2.rect.collidepoint(800, i):
-                            self.char2.rect.x = 10
-                        if self.char1.rect.collidepoint(800, i):
-                            self.char1.rect.x = 10
-                        if self.char2.rect.collidepoint(0, i):
-                            self.char2.rect.x = 750
-                        if self.char1.rect.collidepoint(0, i):
-                            self.char1.rect.x = 750
-                    for i in range(250, 550):
+                    for i in range(0, 800):
                         if self.char2.rect.collidepoint(800, i):
                             self.char2.rect.x = 10
                         if self.char1.rect.collidepoint(800, i):
@@ -222,5 +236,9 @@ class loop:
                     self.screen.blit(self.rend, (275, 100))
                     self.rend = self.font.render('PRESS R TO RESTART', False, 'black')
                     self.screen.blit(self.rend, (250, 390))
+
             pygame.display.flip()
             self.clock.tick(60)
+    def getlasttime(self, x):
+        self.last = x
+        self.gottime = True
