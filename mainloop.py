@@ -41,12 +41,12 @@ class loop:
         self.plyr1health = 100
         self.plyr2health = 100
         self.healthimg =  pygame.image.load('./images/healthbar.png').convert_alpha()
-        self.healthimg = pygame.transform.scale(self.healthimg,(212, 25))
+        self.healthimg = pygame.transform.scale(self.healthimg,(212, 35))
         self.healthimg2 = pygame.transform.flip(self.healthimg, True, False)
-        self.healthbar1 = pygame.rect.Rect(10, 50, self.plyr1health * 2, 15)
-        self.healthbar2 = pygame.rect.Rect(590, 50, self.plyr2health * 2, 15)
+        self.healthbar1 = pygame.rect.Rect(10, 50, self.plyr1health * 2, 25)
+        self.healthbar2 = pygame.rect.Rect(590, 50, self.plyr2health * 2, 25)
         self.usrevnt = pygame.USEREVENT + 1
-        self.timer = pygame.time.set_timer(self.usrevnt, 3_000)
+        self.timer = pygame.time.set_timer(self.usrevnt, 10_000)
         self.gottime = False
         self.charsgroup = pygame.sprite.Group()
         self.chestsgroup = pygame.sprite.Group()
@@ -54,6 +54,7 @@ class loop:
         self.charsgroup.add(self.char1)
         self.charsgroup.add(self.char2)
         self.font = pygame.font.Font('./fonts/VCR_OSD_MONO_1.001.ttf', 30)
+        self.font2 = pygame.font.Font('./fonts/Spaceship Bullet.ttf', 25)
         self.running = True
 
     def startloop(self):
@@ -63,8 +64,7 @@ class loop:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-                if event.type == self.usrevnt and not self.showchest :
-                        self.showchest = True
+                if event.type == self.usrevnt and not self.showchest and randint(0,1):self.showchest = True
                 if event.type == pygame.KEYDOWN:
                     if self.game == 1:
                         if event.key == pygame.K_UP and self.alljumpsforchar2 < 2:
@@ -86,6 +86,9 @@ class loop:
                                 self.char2wp.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char2state))
                                 self.char2wp.shootdetach(self.char2.rect.x, self.char2.rect.y, self.shot2)
                             self.char2wp.shoot(self.screen, self.char2state, self.char2.rect.x, self.char2.rect.y)
+                            self.char2wp.allshots += 1 
+                            if self.char2wp.allshots == self.char2wp.ammo:
+                                self.char2wp = weapons.char2weapon(10, False)
                             self.char2slash = True
                             self.char1hit = False
 
@@ -108,6 +111,9 @@ class loop:
                                 self.char1wp.bullets.append((pygame.rect.Rect(self.x, self.y, 25, 25), self.char1state))
                                 self.char1wp.shootdetach(self.char1.rect.x, self.char1.rect.y, self.shot1)
                             self.char1wp.shoot(self.screen, self.char1state, self.char1.rect.x, self.char1.rect.y)
+                            self.char1wp.allshots += 1 
+                            if self.char1wp.allshots == self.char1wp.ammo:
+                                self.char1wp = weapons.char1weapon(10, False)
                             self.char1slash = True
                             self.char2hit = False
 
@@ -153,6 +159,12 @@ class loop:
                 pygame.draw.rect(self.screen, 'red', self.healthbar2)
                 self.screen.blit(self.healthimg, (0,45))
                 self.screen.blit(self.healthimg2, (590,45))
+                self.screen.blit(pygame.transform.scale(self.char1wp.bulletimg, (25,25)), (230, 46))
+                self.screen.blit(pygame.transform.scale(self.char2wp.bulletimg, (25,25)), (550, 46))
+                if self.char2wp.ammo:
+                    self.screen.blit(self.font2.render(str(self.char2wp.ammo - self.char2wp.allshots) + '/' + str(self.char2wp.ammo), False, 'black'), (760, 100))
+                if self.char1wp.ammo:
+                    self.screen.blit(self.font2.render(str(self.char2wp.ammo - self.char2wp.allshots) + '/' + str(self.char2wp.ammo), False, 'black'), (0, 100))
                 self.healthbar1.width = self.plyr1health * 2
                 self.healthbar2.width = self.plyr2health * 2
 
@@ -164,6 +176,7 @@ class loop:
 
                 self.char1.rect.y += self.gravityforchar1
                 self.char2.rect.y += self.gravityforchar2
+
                 if self.char1slash:
                     if not self.char1wp.shoot(self.screen, self.char1state, self.char1.rect.x, self.char1.rect.y):
                         self.char1slash = False

@@ -8,6 +8,7 @@ class weapon:
         self.ammo = ammo
         self.type = 'range'
         self.bulletindex = 0
+        self.allshots = 0
         self.bulletcollision = False
         self.bullets = []
         self.tmplist = []
@@ -48,33 +49,35 @@ class sword(weapon):
         super().__init__(damage, ammo)
         self.type = 'mele'
         self.allswordimgs = []
+        self.allshots = 0
         for i in natsorted(os.listdir('./images/weapons/')):
             self.allswordimgs.append(pygame.image.load('./images/weapons/' + i).convert_alpha())
         self.bulletimg = self.allswordimgs[self.bulletindex]
         self.rect = self.bulletimg.get_rect(topleft=[0,0])
 
     def shoot(self, screen, chardir, x=None,y=None):
-        self.bulletindex += 0.3
-        if self.bulletindex >= len(self.allswordimgs) - 1:
-            self.bulletindex = 0
-            x = -100
-            y = -100
-            self.rect = self.bulletimg.get_rect(topleft=(x + 10, y - 30))
-            return False
-        self.bulletimg = self.allswordimgs[int(self.bulletindex)]
-        if chardir == 'right':
-            if int(self.bulletindex)>= 2:
-                y += 15
-            screen.blit(self.bulletimg, (x + 10, y - 30))
-            self.rect = self.bulletimg.get_rect(topleft=(x + 10, y - 30))
-        else:
-            if int(self.bulletindex)>= 2:
-                y += 15
-            self.rect = self.bulletimg.get_rect(topleft=(x - 60, y - 30))
-            self.bulletimg = pygame.transform.flip(self.bulletimg, True, False)
-            screen.blit(self.bulletimg, (x - 60, y- 30))
+        if self.allshots <= self.ammo:
+            self.bulletindex += 0.3
+            if self.bulletindex >= len(self.allswordimgs) - 1:
+                self.bulletindex = 0
+                x = -100
+                y = -100
+                self.rect = self.bulletimg.get_rect(topleft=(x + 10, y - 30))
+                return False
+            self.bulletimg = self.allswordimgs[int(self.bulletindex)]
+            if chardir == 'right':
+                if int(self.bulletindex)>= 2:
+                    y += 15
+                screen.blit(self.bulletimg, (x + 10, y - 30))
+                self.rect = self.bulletimg.get_rect(topleft=(x + 10, y - 30))
+            else:
+                if int(self.bulletindex)>= 2:
+                    y += 15
+                self.rect = self.bulletimg.get_rect(topleft=(x - 60, y - 30))
+                self.bulletimg = pygame.transform.flip(self.bulletimg, True, False)
+                screen.blit(self.bulletimg, (x - 60, y- 30))
 
-        return True
+            return True
 
 class char2weapon(weapon):
     def __init__(self, damage, ammo) -> None:
@@ -85,11 +88,9 @@ class char2weapon(weapon):
         self.bulletimg = self.char2bullets[self.bulletindex]
         self.playernum = 2
     def shoot(self, screen, chardir, x=None, y=None):
-        return super().shoot(screen, chardir, x, y)
         for i in self.char2bullets:
-            self.bulletindex += 0.01
+            self.bulletindex += 0.1
             if self.bulletindex >= len(self.char2bullets) - 1:
                 self.bulletindex = 0
             self.bulletimg = self.char2bullets[int(self.bulletindex)]
-
-
+        return super().shoot(screen, chardir, x, y)
